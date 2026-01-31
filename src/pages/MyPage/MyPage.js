@@ -1,5 +1,5 @@
 import React from "react";
-import Statistics from "./Statistics";
+import Statistics from "./Status";
 import Profile from "./Profile";
 import "../../styles/MyPage.css";
 
