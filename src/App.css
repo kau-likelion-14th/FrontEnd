@@ -36,3 +36,12 @@
     transform: rotate(360deg);
   }
 }
+
+@font-face {
+  font-family: 'Paperlogy';
+  src: url(../../public/font/Paperlogy-4Regular.ttf) format('truetype');
+}
+
+body {
+  font-family: 'Paperlogy', sans-serif;
+}
