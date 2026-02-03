@@ -3,7 +3,7 @@
   src: url(../../public/font/Paperlogy-5Medium.ttf) format('truetype');
 }
 
-.page-container {
+.mypage-container {
   height: 100%;
   display: flex;
   flex-direction: column;
