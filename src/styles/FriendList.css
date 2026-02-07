@@ -1,0 +1,145 @@
+/* C:\Users\kimye\OneDrive\바탕 화면\lte-frontend\src\styles\FriendList.css */
+
+.friend-list {
+  width: 100%;
+}
+
+.friend-list__title {
+  margin-bottom: 24px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111;
+}
+
+.friend-list__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.friend-list__empty {
+  font-size: 14px;
+  color: #8f8f8f;
+}
+
+/* ✅ space-between 제거 + 한 줄 안정화 */
+.friend-list__item {
+  display: flex;
+  align-items: center;
+}
+
+/* ✅ 줄어들 때 텍스트 영역이 줄 수 있도록 */
+.friend-list__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0; /* ⭐ 말줄임 필수 조건 */
+}
+
+.friend-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #8f8f8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 54px; /* ✅ 아바타 크기 고정 */
+}
+
+/* ✅ 텍스트 말줄임을 위한 래퍼 성격 */
+.friend-info {
+  min-width: 0;
+}
+
+.friend-info__top {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.friend-info__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+
+  /* ✅ 좁을 때 말줄임 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+
+.friend-info__tag {
+  font-size: 16px;
+  color: #8f8f8f;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.friend-info__bio {
+  font-size: 13px;
+  color: #8f8f8f;
+
+  /* ✅ 좁을 때 말줄임 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 260px;
+}
+
+.friend-info__bio--empty {
+  height: 16px;
+}
+
+/* ✅ 간격은 margin-left로 컨트롤 */
+.friend-remove-btn {
+  margin-left: 300px; /* 간격 조절 포인트 */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.friend-remove-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+/* 모바일에서 조금 더 촘촘하게 */
+@media (max-width: 768px) {
+  .friend-list__items {
+    gap: 14px;
+  }
+
+  .friend-avatar {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+  }
+
+  .friend-remove-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .friend-remove-btn {
+    margin-left: 14px;
+    padding: 4px;
+  }
+
+  .friend-info__name {
+    max-width: 160px;
+  }
+
+  .friend-info__bio {
+    max-width: 180px;
+  }
+}

@@ -9,7 +9,7 @@ function Footer() {
         <div className="footer-top">
           <div className="footer-brand">
             <img
-              src="/logo/lte_logo.png"
+              src="/icon/lte_logo.png"
               alt="LTE 로고"
               className="footer-logo"
             />
