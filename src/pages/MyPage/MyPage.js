@@ -5,7 +5,7 @@ import "../../styles/MyPage.css";
 
 const MyPage = () => {
   return (
-    <div className="page-container">
+    <div className="mypage-container">
       <Profile />
       <Statistics />
     </div>
