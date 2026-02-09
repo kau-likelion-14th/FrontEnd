@@ -51,7 +51,7 @@ export default function LoginPage() {
             onClick={handleClick}
           >
             <img
-              src="/logo/kakao_login_large_wide.png"
+              src="/icon/kakao_login_large_wide.png"
               alt="카카오 로그인"
             />
           </button>

@@ -6,7 +6,7 @@ function Header() {
     <header className="header">
       {/* 좌측 로고 */}
       <div className="header-left">
-        <img src="/logo/lte_logo.png" alt="LTE 로고" className="header-logo" />
+        <img src="/icon/lte_logo.png" alt="LTE 로고" className="header-logo" />
         <span className="header-title">Lion To-do Everyday</span>
       </div>
 
@@ -35,7 +35,7 @@ function Header() {
       {/* 우측 유저 영역 */}
       <div className="header-right">
         <span className="user-name">김예나님</span>
-        <img src="/logo/logout.png" alt="로그아웃" className="logout-icon" />
+        <img src="/icon/logout.png" alt="로그아웃" className="logout-icon" />
       </div>
     </header>
   );

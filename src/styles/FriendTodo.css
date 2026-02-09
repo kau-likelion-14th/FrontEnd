@@ -1,0 +1,22 @@
+/* C:\Users\kimye\OneDrive\바탕 화면\lte-frontend\src\styles\FriendTodo.css */
+
+.friend-todo {
+  width: 100%;
+}
+
+/* 친구 화면에서는 클릭/호버로 “편집 가능해 보이는 느낌”을 없애는 게 좋아서 추가 */
+.friend-todo .todo-item {
+  cursor: default;
+}
+
+/* 체크박스도 클릭 가능한 버튼처럼 보이지 않게 */
+.friend-todo .checkbox {
+  pointer-events: none;
+}
+
+/* 빈 상태 문구 */
+.friend-todo__empty {
+  font-size: 14px;
+  color: #8f8f8f;
+  padding: 8px 0;
+}
