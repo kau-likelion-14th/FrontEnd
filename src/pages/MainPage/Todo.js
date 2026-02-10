@@ -10,13 +10,25 @@ const Categories = {
     동아리: { backgroundColor: '#B6DAFF', color: '#333' },
 };
 
-const Todo = () => {
-    const [todos, setTodos] = useState([
-        { id: uid(), text: '리액트 공부하기', category: '공부', completed: true },
-        { id: uid(), text: '공부하기', category: '공부', completed: true },
-        { id: uid(), text: '헬스장 가기', category: '운동', completed: false },
-        { id: uid(), text: '동아리 회의 참석', category: '동아리', completed: false },
-    ]);
+const toDateKey = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+};
+
+const Todo = ({ selectedDate, todosByDate, setTodosByDate }) => {
+    const dateKey = toDateKey(selectedDate);
+
+    const todos = todosByDate[dateKey] ?? [];
+
+    const setTodos = (updater) => {
+        setTodosByDate((prev) => {
+            const current = prev[dateKey] ?? [];
+            const nextTodos = typeof updater === "function" ? updater(current) : updater;
+            return { ...prev, [dateKey]: nextTodos };
+        });
+    };
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTodo, setEditingTodo] = useState(null);

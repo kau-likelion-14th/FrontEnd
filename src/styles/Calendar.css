@@ -65,6 +65,7 @@
 }
 
 .calendar-container .react-calendar__tile {
+    position: relative;
     height: 80px;
     border-radius: 15px;
 }
@@ -101,4 +102,26 @@
 .calendar-container .react-calendar__tile--active{
   background: #0A84FF;
   border-radius: 15px;
+}
+
+.tile-meta{
+  position: absolute;
+  left: 50%;
+  top: 38px;   
+  transform: translateX(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 16px;
+  font-weight: 800;
+  color: #8F8F8F;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+.tile-done .tile-meta{
+  color: #0A84FF;
+  font-size: 14px;
+  font-weight: 900;
 }
