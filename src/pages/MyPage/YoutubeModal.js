@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { get, post, del } from "../../Api";
-import config from "../../Config";
+import { get, post, del } from "../../api";
+import config from "../../config";
 import "../../styles/MyPage.css";
+import profilemusic from "../../assets/image/search.png";
 
 const YoutubeModal = ({ isOpen, onClose, onPick }) => {
   const [tab, setTab] = useState("search"); // "search" | "me"
@@ -139,7 +140,12 @@ const YoutubeModal = ({ isOpen, onClose, onPick }) => {
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
               <button className="ytm-btn" onClick={handleSearch} disabled={loading}>
-                검색
+                <img
+                    src={profilemusic}
+                    alt="프로필 노래 수정 아이콘"
+                    className="profile-search-icon"
+                    style={{cursor: "pointer"}}
+                  />
               </button>
             </div>
 

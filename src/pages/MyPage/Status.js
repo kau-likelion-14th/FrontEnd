@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import StatCard from "./StatCard";
-import { get } from "../../Api";
-import Config from "../../Config";
+import { get } from "../../api";
+import config from "../../config";
 
 const Status = () => {
   const [stats, setStats] = useState([
@@ -13,7 +13,7 @@ const Status = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await get(Config.STATISTICS.GET);
+        const response = await get(config.STATISTICS.GET);
         setStats([
           { icon: "🔥", title: "연속 달성일", statistics: {value: response.consecutiveDays, unit: "일"} },
           { icon: "🎯", title: "최근 30일 달성률", statistics: {value: response.achievementRate, unit: "%"} },

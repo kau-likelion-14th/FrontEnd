@@ -4,8 +4,8 @@ import profileEdit from "../../assets/image/imgedit.png";
 import profilemusic from "../../assets/image/search.png";
 
 
-import { uploadProfile } from "../../Api";
-import Config from "../../Config";
+import { uploadProfile } from "../../api";
+import config from "../../config";
 import YoutubeModal from "./YoutubeModal";
 
 const Profile = () => {
@@ -41,7 +41,7 @@ const Profile = () => {
     try {
       // ✅ 서버가 받는 키가 "introduction"일 가능성이 높음(스웨거 result에 introduction이 있음)
       const data = await uploadProfile(
-        Config.PROFILE.PUT,
+        config.PROFILE.PUT,
         {
           intro: undefined, // 안 씀
           song: undefined,  // 안 씀

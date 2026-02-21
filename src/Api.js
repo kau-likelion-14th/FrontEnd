@@ -1,7 +1,7 @@
 // src/api.js
 import { Cookies } from "react-cookie";
 import axios from "axios";
-import config from "./Config";
+import config from "./config";
 
 // ===== 상수/쿠키 =====
 const ACCESS_TOKEN_KEY = "accessToken";
@@ -17,7 +17,8 @@ const api = axios.create({
 // ===== 요청 인터셉터: 토큰 자동 첨부 =====
 api.interceptors.request.use(
   (req) => {
-    const token = cookies.get(ACCESS_TOKEN_KEY);
+    const token = cookies.get("accessToken") || localStorage.getItem("accessToken");
+    console.log("[api] token =", token);
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
     }

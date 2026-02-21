@@ -1,6 +1,6 @@
 const BASE_URL ="http://lte-dev-env.eba-xaqgpxhu.ap-northeast-2.elasticbeanstalk.com";
 
-const Config = {
+const config = {
     API_URL: BASE_URL,
 
     TODOS: {
@@ -57,4 +57,4 @@ const Config = {
     }
 };
 
-export default Config;
+export default config;
