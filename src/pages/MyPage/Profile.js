@@ -3,16 +3,23 @@ import profileImg from "../../assets/image/profile.png";
 import profileEdit from "../../assets/image/imgedit.png";
 import profilemusic from "../../assets/image/search.png";
 
+
+import { uploadProfile } from "../../api";
+import config from "../../config";
+import YoutubeModal from "./YoutubeModal";
+
 const Profile = () => {
   const fileInputRef = useRef(null);
 
-  const [nickname] = useState("Likelion#1253");
+  const [nickname, setNickname] = useState("Likelion#1253");
   const [intro, setIntro] = useState("안녕하세요");
   const [song, setSong] = useState("내꺼하자 - 인피니트");
 
-  const [profileImageUrl] = useState(null);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+
+  const [isYoutubeOpen, setIsYoutubeOpen] = useState(false);
 
   const handleClickEditIcon = () => {
     fileInputRef.current?.click();
@@ -30,14 +37,48 @@ const Profile = () => {
 
   const displayImageSrc = previewUrl || profileImageUrl || profileImg;
 
-  const handleSave = () => {
-    console.log("저장될 프로필 데이터:", {
-      intro,
-      song,
-      selectedImageFile,
-    });
+  const handleSave = async () => {
+    try {
+      // ✅ 서버가 받는 키가 "introduction"일 가능성이 높음(스웨거 result에 introduction이 있음)
+      const data = await uploadProfile(
+        config.PROFILE.PUT,
+        {
+          intro: undefined, // 안 씀
+          song: undefined,  // 안 씀
+          imageFile: selectedImageFile,
+          // uploadProfile이 intro/song 키로 넣도록 되어있으니 옵션으로 필드명 맞춤
+        },
+        {
+          introField: "introduction",
+          songField: "song", // 서버에 없으면 무시될 수 있음
+          imageField: "image",
+        }
+      );
 
-    alert("프로필이 임시로 저장됐어요! (API 연결 전)");
+      // ✅ 스웨거 응답 구조 반영
+      const result = data?.result;
+      if (result?.profileImageUrl) {
+        setProfileImageUrl(result.profileImageUrl);
+      }
+      if (result?.introduction !== undefined) {
+        setIntro(result.introduction);
+      }
+      if (result?.userName) {
+        setNickname(result.userName);
+      }
+
+      // 미리보기 정리
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+      setSelectedImageFile(null);
+
+      alert("프로필 저장 완료!");
+    } catch (error) {
+      console.error("프로필 저장 실패:", error);
+      console.error("status:", error?.response?.status);
+      console.error("data:", error?.response?.data);
+      alert("프로필 저장 실패! 콘솔(status/data) 확인");
+    }
   };
 
   return (
@@ -91,7 +132,7 @@ const Profile = () => {
                     <div className="profile-content">
                         <input
                             className="profile-content-input"
-                            value={`🎵 ${song}`}
+                            value={song}
                             onChange={(e) => setSong(e.target.value)}
                         />
                     </div>
@@ -99,10 +140,17 @@ const Profile = () => {
                         src={profilemusic}
                         alt="프로필 노래 수정 아이콘"
                         className="profile-search-icon"
+                        onClick={() => setIsYoutubeOpen(true)}
+                        style={{cursor: "pointer"}}
                     />
                 </div>
             </div>
         </div>
+        <YoutubeModal
+          isOpen={isYoutubeOpen}
+          onClose={() => setIsYoutubeOpen(false)}
+          onPick={(picked) => setSong(picked.displayText || picked.title || "")}
+        />
     </div>
   );
 };
