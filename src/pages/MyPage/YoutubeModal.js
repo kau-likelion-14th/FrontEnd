@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { get, post, del } from "../../api";
-import config from "../../config";
+import { get, post, del } from "../../Api";
+import config from "../../Config";
 import "../../styles/MyPage.css";
 import profilemusic from "../../assets/image/search.png";
 

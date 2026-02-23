@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import StatCard from "./StatCard";
-import { get } from "../../api";
-import config from "../../config";
+import { get } from "../../Api";
+import config from "../../Config";
 
 const Status = () => {
   const [stats, setStats] = useState([
