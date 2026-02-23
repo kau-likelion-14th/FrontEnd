@@ -20,7 +20,7 @@ api.interceptors.request.use(
     const token = cookies.get("accessToken") || localStorage.getItem("accessToken");
     console.log("[api] token =", token);
     if (token) {
-      req.headers.Authorization = `Bearer ${token}`;
+      req.headers.Authorization = token;
     }
     return req;
   },
@@ -34,6 +34,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       console.error("로그인 만료됨. 다시 로그인해주세요.");
       cookies.remove(ACCESS_TOKEN_KEY, { path: "/" });
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
     }
     return Promise.reject(error);
   }
