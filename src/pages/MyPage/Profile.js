@@ -4,8 +4,8 @@ import profileEdit from "../../assets/image/imgedit.png";
 import profilemusic from "../../assets/image/search.png";
 
 
-import { uploadProfile } from "../../api";
-import config from "../../config";
+import { uploadProfile } from "../../Api";
+import config from "../../Config";
 import YoutubeModal from "./YoutubeModal";
 
 const Profile = () => {

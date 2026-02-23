@@ -1,7 +1,7 @@
 // src/api.js
 import { Cookies } from "react-cookie";
 import axios from "axios";
-import config from "./config";
+import config from "./Config";
 
 // ===== 상수/쿠키 =====
 const ACCESS_TOKEN_KEY = "accessToken";
