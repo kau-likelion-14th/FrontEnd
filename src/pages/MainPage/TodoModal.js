@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "../../styles/Todo.css";
 import RoutineModal from "./RoutineModal";
 
@@ -11,8 +11,13 @@ const TodoModal = ({
     categories
 }) => {
     const isEditMode = Boolean(initialTodo);
+    const categoryKeys = useMemo(() => Object.keys(categories || {}), [categories]);
+    const defaultCategory = useMemo(() => {
+        // ✅ 서버 카테고리 있으면 첫 번째, 없으면 "공부"
+        return categoryKeys[0] ?? "공부";
+    }, [categoryKeys]);
 
-    const [category, setCategory] = useState("공부");
+    const [category, setCategory] = useState(defaultCategory);
     const [text, setText] = useState("");
     const [routine, setRoutine] = useState(null);
 
@@ -21,10 +26,10 @@ const TodoModal = ({
     useEffect(() => {
         if (!isOpen) return;
 
-        setCategory(initialTodo?.category || "공부");
+        setCategory(initialTodo?.category || defaultCategory);
         setText(initialTodo?.text || "");
         setRoutine(initialTodo?.routine || null);
-    }, [isOpen, initialTodo]);
+    }, [isOpen, initialTodo, defaultCategory]);
 
     if (!isOpen) return null;
 
@@ -37,8 +42,6 @@ const TodoModal = ({
             routine,
         });
     };
-
-    const categoryKeys = Object.keys(categories);
 
     return (
         <div className="modal-overlay" onClick={onClose}>

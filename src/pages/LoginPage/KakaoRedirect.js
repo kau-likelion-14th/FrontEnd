@@ -19,7 +19,10 @@ export default function KakaoRedirect() {
         //    (배포에서는 Netlify _redirects가 /api/* 를 백엔드 http로 프록시해줘야 함)
         const res = await axios.post(
           "/api/auth/kakao",
-          { code },
+          { 
+            "code": code,
+            "isDevelop": process.env.NODE_ENV === "production"
+          },
           { headers: { "Content-Type": "application/json" } }
         );
 

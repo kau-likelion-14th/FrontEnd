@@ -3,6 +3,9 @@ import { Cookies } from "react-cookie";
 import axios from "axios";
 import config from "./Config";
 
+console.log("[env] BASE_URL =", process.env.REACT_APP_API_BASE_URL);
+
+
 // ===== 상수/쿠키 =====
 const ACCESS_TOKEN_KEY = "accessToken";
 const cookies = new Cookies();
@@ -17,11 +20,21 @@ const api = axios.create({
 // ===== 요청 인터셉터: 토큰 자동 첨부 =====
 api.interceptors.request.use(
   (req) => {
-    const token = cookies.get("accessToken") || localStorage.getItem("accessToken");
-    console.log("[api] token =", token);
-    if (token) {
-      req.headers.Authorization = token;
+    const rawToken =
+      cookies.get("accessToken") ||
+      localStorage.getItem("accessToken");
+
+    console.log("[api] token =", rawToken);
+
+    if (rawToken) {
+      // 혹시 이미 Bearer가 붙어있으면 제거
+      const token = rawToken.startsWith("Bearer ")
+        ? rawToken.slice(7)
+        : rawToken;
+
+      req.headers.Authorization = `Bearer ${token}`;
     }
+
     return req;
   },
   (error) => Promise.reject(error)

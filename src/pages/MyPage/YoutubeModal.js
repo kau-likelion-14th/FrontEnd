@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { get, post, del } from "../../Api";
 import config from "../../Config";
 import "../../styles/MyPage.css";
@@ -10,6 +10,7 @@ const YoutubeModal = ({ isOpen, onClose, onPick }) => {
   const [results, setResults] = useState([]);
   const [mySongs, setMySongs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const SEARCH_PARAM_KEY = "q";
 
   useEffect(() => {
     if (!isOpen) return;
@@ -20,12 +21,19 @@ const YoutubeModal = ({ isOpen, onClose, onPick }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
+  const normalizeList = (data) => {
+    // get()이 unwrap을 해주더라도, 혹시 남아있을 수 있는 케이스까지 흡수
+    const base = data?.result ?? data?.data ?? data;
+    const list = base?.songs ?? base?.items ?? base?.list ?? base;
+    return Array.isArray(list) ? list : [];
+  };
+
   const fetchMySongs = async () => {
     try {
       setLoading(true);
       const data = await get(config.YOUTUBE.ME);
-      const list = data?.songs ?? data?.data ?? data ?? [];
-      setMySongs(Array.isArray(list) ? list : []);
+      const list = normalizeList(data);
+      setMySongs(list);
     } catch (e) {
       console.error("내 저장곡 조회 실패:", e);
     } finally {
@@ -34,18 +42,20 @@ const YoutubeModal = ({ isOpen, onClose, onPick }) => {
   };
 
   const handleSearch = async () => {
-    if (!keyword.trim()) return;
+    const q = keyword.trim();
+    if (!q) return;
+
     try {
       setLoading(true);
 
-      // ✅ 스웨거에서 param 이름이 keyword면 { keyword: ... } 로 바꿔줘
-      const data = await get(config.YOUTUBE.SEARCH, { query: keyword.trim() });
+      // ✅ query/keyword 파라미터 이름만 바꾸면 됨
+      const params = { [SEARCH_PARAM_KEY]: q };
+      const data = await get(config.YOUTUBE.SEARCH, params);
 
-      const list = data?.items ?? data?.songs ?? data?.data ?? data ?? [];
-      setResults(Array.isArray(list) ? list : []);
+      setResults(normalizeList(data));
     } catch (e) {
       console.error("유튜브 검색 실패:", e);
-      alert("검색 실패! (query/keyword 파라미터 확인 필요)");
+      alert("검색 실패! (검색 파라미터 키: query/keyword 확인 필요)");
     } finally {
       setLoading(false);
     }
@@ -96,11 +106,18 @@ const YoutubeModal = ({ isOpen, onClose, onPick }) => {
       await fetchMySongs();
     } catch (e) {
       console.error("삭제 실패:", e);
+      console.error("status:", e?.response?.status);
+      console.error("data:", e?.response?.data);
       alert("삭제 실패!");
     } finally {
       setLoading(false);
     }
   };
+
+  const showEmptySearch = useMemo(() => {
+    return !loading && results.length === 0 && keyword.trim().length > 0;
+  }, [loading, results.length, keyword]);
+
 
   if (!isOpen) return null;
 
