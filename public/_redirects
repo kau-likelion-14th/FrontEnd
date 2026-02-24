@@ -1,1 +1,8 @@
-/*    /index.html   200
+/api/*  http://lte-dev-env.eba-xaqgpxhu.ap-northeast-2.elasticbeanstalk.com/api/:splat  200
+/auth/* http://lte-dev-env.eba-xaqgpxhu.ap-northeast-2.elasticbeanstalk.com/auth/:splat 200
+/oauth2/* http://lte-dev-env.eba-xaqgpxhu.ap-northeast-2.elasticbeanstalk.com/oauth2/:splat 200
+/users/* http://lte-dev-env.eba-xaqgpxhu.ap-northeast-2.elasticbeanstalk.com/users/:splat 200
+/token/* http://lte-dev-env.eba-xaqgpxhu.ap-northeast-2.elasticbeanstalk.com/token/:splat 200
+/health  http://lte-dev-env.eba-xaqgpxhu.ap-northeast-2.elasticbeanstalk.com/health  200
+
+/*  /index.html  200
