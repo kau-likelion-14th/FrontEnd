@@ -17,7 +17,7 @@ const config = {
   },
 
   STATISTICS: {
-    GET: `${BASE_URL}/api/statistics`,
+    GET: `${BASE_URL}/api/statistic`,
   },
 
   HEALTH: {

@@ -20,7 +20,7 @@ api.interceptors.request.use(
     const token = cookies.get("accessToken") || localStorage.getItem("accessToken");
     console.log("[api] token =", token);
     if (token) {
-      req.headers.Authorization = token;
+      req.headers.Authorization = `Bearer ${token}`;
     }
     return req;
   },
