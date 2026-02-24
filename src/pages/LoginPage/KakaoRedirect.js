@@ -9,13 +9,16 @@ export default function KakaoRedirect() {
     const run = async () => {
       const code = new URLSearchParams(window.location.search).get("code");
       if (!code) {
-        navigate("/login");
+        navigate("/login", { replace: true });
         return;
       }
 
       try {
+        // ✅ 배포(https)에서도 Mixed Content 안 나게:
+        //    절대 http 백엔드로 직접 치지 말고, 항상 same-origin 상대경로로 호출
+        //    (배포에서는 Netlify _redirects가 /api/* 를 백엔드 http로 프록시해줘야 함)
         const res = await axios.post(
-          `${process.env.REACT_APP_API_BASE_URL}/api/auth/kakao`,
+          "/api/auth/kakao",
           { code },
           { headers: { "Content-Type": "application/json" } }
         );
@@ -30,10 +33,10 @@ export default function KakaoRedirect() {
         localStorage.setItem("userId", String(res.data?.result?.id ?? ""));
         localStorage.setItem("username", res.data?.result?.username ?? "");
 
-        navigate("/"); // 로그인 성공 후 이동할 페이지
+        navigate("/", { replace: true });
       } catch (e) {
         console.error(e);
-        navigate("/login");
+        navigate("/login", { replace: true });
       }
     };
 
