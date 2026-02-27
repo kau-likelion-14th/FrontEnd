@@ -10,7 +10,7 @@ const toDateKey = (date) => {
     return `${y}-${m}-${d}`;
 };
 
-export default function CustomCalendar({initialDate=new Date(), onDateChange, todosByDate={}}) {
+export default function CustomCalendar({initialDate=new Date(), onDateChange, onMonthChange, todosByDate={}, remainingByDate = {}}) {
     const [selectedDate, setSelectedDate] = useState(initialDate);
 
     const handledDateChange = (value) => {
@@ -21,6 +21,15 @@ export default function CustomCalendar({initialDate=new Date(), onDateChange, to
 
     const getDayMeta = (date) => {
         const key = toDateKey(date);
+
+        // ✅ 1순위: 월별 캘린더 API에서 준 남은 개수
+        const hasKey = Object.prototype.hasOwnProperty.call(remainingByDate, key);
+        if (hasKey) {
+            const remaining = Number(remainingByDate[key]) || 0;
+            return { hasTodos: true, remaining, allDone: remaining === 0 };
+        }
+
+        // ✅ 2순위: fallback (일별 todosByDate 기반)
         const list = todosByDate[key] ?? [];
         if (list.length === 0) return { hasTodos: false, remaining: 0, allDone: false };
 
@@ -33,6 +42,9 @@ export default function CustomCalendar({initialDate=new Date(), onDateChange, to
             <Calendar
                 onChange={handledDateChange}
                 value={selectedDate}
+                onActiveStartDateChange={({ activeStartDate }) => {
+                    onMonthChange?.(activeStartDate);
+                }}
                 calendarType='gregory'
                 view='month'
                 prev2Label={null}
