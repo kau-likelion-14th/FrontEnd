@@ -6,7 +6,6 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import MyPage from "./pages/MyPage/MyPage";
 import FriendPage from "./pages/FriendPage/FriendPage";
 import FriendDetailPage from "./pages/FriendPage/FriendDetailPage";
-import KakaoRedirect from "./pages/LoginPage/KakaoRedirect";
 
 function App() {
   return (
@@ -14,7 +13,6 @@ function App() {
       <Routes>
         {/* 로그인 페이지 (헤더/푸터 없음) */}
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/login/oauth2/code/kakao" element={<KakaoRedirect />} />
 
         {/* 헤더 + 푸터가 있는 레이아웃 */}
         <Route element={<Layout />}>
