@@ -250,6 +250,7 @@
   border: none;
   cursor: pointer;
   background: #E5F8F1;
+  font-family: "Paperlogy", sans-serif;
 }
 
 .ytm-btn:disabled {

@@ -9,7 +9,7 @@ import "../../styles/FriendDetailPage.css";
 
 const Categories = {
   공부: { backgroundColor: "#E5F8F1", color: "#333" },
-  운동: { backgroundColor: "#FFC8BE", color: "#333" },
+  일상: { backgroundColor: "#FFC8BE", color: "#333" },
   동아리: { backgroundColor: "#B6DAFF", color: "#333" },
 };
 
@@ -41,7 +41,7 @@ function FriendDetailPage() {
     [toKey(new Date())]: [
       { id: "t1", text: "오늘은 또 뭘해볼까", category: "공부", completed: true },
       { id: "t2", text: "오늘은 또 뭘해볼까", category: "공부", completed: true },
-      { id: "t3", text: "오늘은 또 뭘해볼까", category: "운동", completed: false },
+      { id: "t3", text: "오늘은 또 뭘해볼까", category: "일상", completed: false },
       { id: "t4", text: "오늘은 또 뭘해볼까", category: "동아리", completed: false },
       { id: "t5", text: "오늘은 또 뭘해볼까", category: "동아리", completed: false },
     ],

@@ -1,12 +1,12 @@
 import React, {useMemo, useEffect, useState} from "react";
 import "../../styles/Todo.css";
 import TodoModal from "./TodoModal";
-import { get, post, put, del } from "../../Api";
+import { get, post, put, del, patch } from "../../Api";
 import config from "../../Config";
 
 const Categories = {
     공부: { backgroundColor: '#E5F8F1', color: '#333' },
-    운동: { backgroundColor: '#FFC8BE', color: '#333' },
+    일상: { backgroundColor: '#FFC8BE', color: '#333' },
     동아리: { backgroundColor: '#B6DAFF', color: '#333' },
 };
 
@@ -25,7 +25,7 @@ const normalizeTodo = (t) => ({
   raw: t,
 });
 
-const Todo = ({ selectedDate, todosByDate, setTodosByDate }) => {
+const Todo = ({ selectedDate, todosByDate, setTodosByDate, remainingByDate, setRemainingByDate }) => {
     const [serverCategories, setServerCategories] = useState([]);
     const dateKey = toDateKey(selectedDate);
 
@@ -46,8 +46,6 @@ const Todo = ({ selectedDate, todosByDate, setTodosByDate }) => {
 
     const categoriesForModal = useMemo(() => {
         // TodoModal이 Object.keys(categories) 쓰는 구조라서
-        // { "공부": {...}, "운동": {...} } 형태를 유지해주되
-        // 실제 서버 categoryName으로 key를 구성
         const colorPreset = [
             { backgroundColor: "#E5F8F1", color: "#333" },
             { backgroundColor: "#FFC8BE", color: "#333" },
@@ -60,7 +58,7 @@ const Todo = ({ selectedDate, todosByDate, setTodosByDate }) => {
             // 서버 못 불러오면 임시로 기존값
             return {
             공부: { backgroundColor: "#E5F8F1", color: "#333" },
-            운동: { backgroundColor: "#FFC8BE", color: "#333" },
+            일상: { backgroundColor: "#FFC8BE", color: "#333" },
             동아리: { backgroundColor: "#B6DAFF", color: "#333" },
             };
         }
@@ -123,7 +121,8 @@ const routineToPayload = (routine) => {
 
     const refetch = async () => {
         const data = await get(config.TODOS.LIST, { date: dateKey });
-        const list = data?.todos ?? data?.items ?? data?.list ?? data ?? [];
+        const payload = data?.result ?? data;
+        const list = payload?.todos ?? payload?.items ?? payload?.list ?? payload ?? [];
         const normalized = Array.isArray(list) ? list.map(normalizeTodo) : [];
         setTodos(normalized);
     };
@@ -131,12 +130,22 @@ const routineToPayload = (routine) => {
     const toggleComplete = async (todo) => {
     // 1) UI optimistic
         setTodos((prev) =>
-        prev.map((t) => (t.id === todo.id ? { ...t, completed: !t.completed } : t))
+            prev.map((t) => (t.id === todo.id ? { ...t, completed: !t.completed } : t))
         );
 
         try {
-        await put(config.TODOS.TOGGLE_COMPLETE(todo.id, dateKey));
-        // 필요하면 refetch()
+            const nextCompleted = !todo.completed;
+            
+            await patch(
+                config.TODOS.TOGGLE_COMPLETE(todo.id, dateKey),
+                { completed: !todo.completed }
+            );
+
+            setRemainingByDate?.((prev) => {
+            const cur = Number(prev?.[dateKey] ?? 0);
+            const next = nextCompleted ? Math.max(0, cur - 1) : cur + 1;
+            return { ...prev, [dateKey]: next };
+            });
         } catch (e) {
         console.error("toggle fail:", e);
         // 실패하면 되돌리기
@@ -178,7 +187,7 @@ const routineToPayload = (routine) => {
             );
 
             const createdTodo = created?.result ?? created?.data ?? created;
-            const newTodo = created ? normalizeTodo(created) : null;
+            const newTodo = created ? normalizeTodo(createdTodo) : null;
             if (newTodo?.id) setTodos((prev) => [...prev, newTodo]);
             else await refetch();
         }
