@@ -13,6 +13,7 @@ function App() {
       <Routes>
         {/* 로그인 페이지 (헤더/푸터 없음) */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/login/oauth2/code/kakao" element={<LoginPage />} />
 
         {/* 헤더 + 푸터가 있는 레이아웃 */}
         <Route element={<Layout />}>
