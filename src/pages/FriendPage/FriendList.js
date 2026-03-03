@@ -1,3 +1,4 @@
+// FriendList.js
 // C:\Users\kimye\OneDrive\바탕 화면\lte-frontend\src\pages\FriendPage\FriendList.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +7,7 @@ import "../../styles/FriendList.css";
 function FriendList({
   title = "팔로우 목록",
   friends = [],
-  onClickRemove, 
+  onClickRemove,
   emptyText = "아직 팔로우한 친구가 없습니다.",
 }) {
   const navigate = useNavigate();
@@ -36,7 +37,16 @@ function FriendList({
                 }}
               >
                 <div className="friend-avatar" aria-hidden="true">
-                  <UserIcon />
+                  {/* ✅ [추가] 프로필 이미지가 있으면 보여주고, 없으면 기존 아이콘 */}
+                  {friend.profileImageUrl ? (
+                    <img
+                      src={friend.profileImageUrl}
+                      alt=""
+                      className="friend-avatar__img"
+                    />
+                  ) : (
+                    <UserIcon />
+                  )}
                 </div>
 
                 <div className="friend-info">

@@ -1,10 +1,16 @@
 // C:\Users\kimye\OneDrive\바탕 화면\lte-frontend\src\pages\FriendPage\FriendTodo.js
-import React from "react";
+import React, { useMemo } from "react";
 
-import "../../styles/Todo.css";          // ✅ 팀원 Todo.css 그대로 사용(똑같이 보이게)
-import "../../styles/FriendTodo.css";    // ✅ 친구 전용으로 필요한 부분만 살짝 조정
+import "../../styles/Todo.css";       // ✅ 팀원 Todo.css 그대로 사용(똑같이 보이게)
+import "../../styles/FriendTodo.css"; // ✅ 친구 전용으로 필요한 부분만 살짝 조정
 
 const FriendTodo = ({ title = "To do List", todos = [], categories = {} }) => {
+  const counts = useMemo(() => {
+    const total = todos.length;
+    const done = todos.filter((t) => t.completed).length;
+    return { total, done };
+  }, [todos]);
+
   return (
     <div className="friend-todo">
       <div className="todo-container">
@@ -12,6 +18,10 @@ const FriendTodo = ({ title = "To do List", todos = [], categories = {} }) => {
           <div className="todo-title">{title}</div>
           {/* ✅ 친구 화면: 추가 버튼 없음 */}
         </div>
+
+        {/* 필요하면 진행률 텍스트 같은 거 추가 가능 (UI 유지하려면 생략 추천)
+            <div className="todo-subtitle">{counts.done}/{counts.total}</div>
+        */}
 
         <div className="todo-list">
           {todos.length === 0 ? (
