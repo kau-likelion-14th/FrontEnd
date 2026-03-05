@@ -1,8 +1,9 @@
 // Config.js
 
-// ✅ 배포에서는 Netlify 프록시(/_redirects)를 타야 하므로 baseURL은 "" (same-origin)
-// ✅ 로컬에서는 로컬 백엔드로
-const BASE_URL = ""
+const BASE_URL = 
+  process.env.NODE_ENV === "production"
+    ? ""
+    : "";
 
 const config = {
   API_URL: BASE_URL,
@@ -58,6 +59,16 @@ const config = {
     REISSUE: `${BASE_URL}/api/auth/reissue`,
     LOGIN: `${BASE_URL}/api/auth/login`,
     KAKAO: `${BASE_URL}/api/auth/kakao`,
+  },
+  
+  FRIEND: {
+    PROFILE: (friendId) => `${BASE_URL}/api/users/${friendId}`, // 또는 /api/friends/{id}
+    TODOS: {
+      LIST: (friendId) => `${BASE_URL}/api/users/${friendId}/todos`, // date=YYYY-MM-DD
+    },
+    CALENDAR: {
+      GET: (friendId) => `${BASE_URL}/api/users/${friendId}/todos/calendar`, // year, month
+    },
   },
 };
 

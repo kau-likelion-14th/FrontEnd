@@ -179,6 +179,12 @@ body {
   font-weight: 700;
 }
 
+.login-required-message {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #ff6b6b;
+  font-weight: 500;
+}
 /* =========================
    ✅ Responsive
    ========================= */
