@@ -29,6 +29,9 @@
 .friend-list__item {
   display: flex;
   align-items: center;
+
+  /* ✅ 추가: 오른쪽 버튼을 항상 끝으로 */
+  justify-content: space-between;
 }
 
 /* ✅ 줄어들 때 텍스트 영역이 줄 수 있도록 */
@@ -37,6 +40,9 @@
   align-items: center;
   gap: 16px;
   min-width: 0; /* ⭐ 말줄임 필수 조건 */
+
+  /* ✅ 추가: 왼쪽 영역이 가능한 넓게 */
+  flex: 1;
 }
 
 .friend-avatar {
@@ -98,11 +104,21 @@
 
 /* ✅ 간격은 margin-left로 컨트롤 */
 .friend-remove-btn {
-  margin-left: 300px; /* 간격 조절 포인트 */
+  /* ❌ 기존: margin-left: 300px;  <- 흔들림 원인 */
+  margin-left: 0; /* ✅ 수정 */
+
   background: none;
   border: none;
   cursor: pointer;
-  padding: 6px;
+
+  /* ✅ 추가: 버튼 영역 고정해서 줄마다 위치/높이 안정화 */
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0; /* 기존 6px 대신 박스 고정이 더 안정적 */
   flex-shrink: 0;
   line-height: 0;
 }
@@ -111,6 +127,8 @@
   width: 20px;
   height: 20px;
   object-fit: contain;
+
+  display: block; /* ✅ 추가 */
 }
 
 /* 모바일에서 조금 더 촘촘하게 */
@@ -131,8 +149,10 @@
   }
 
   .friend-remove-btn {
-    margin-left: 14px;
-    padding: 4px;
+    margin-left: 0; /* ✅ 수정 */
+    width: 40px;
+    height: 40px;
+    padding: 0;
   }
 
   .friend-info__name {

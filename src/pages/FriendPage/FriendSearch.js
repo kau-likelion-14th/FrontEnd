@@ -1,38 +1,86 @@
 // C:\Users\kimye\OneDrive\바탕 화면\lte-frontend\src\pages\FriendPage\FriendSearch.js
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { get } from "../../Api";
 import "../../styles/FriendSearch.css";
+
+// ✅ [추가] "이름#태그" 분리
+function splitUserName(userName = "") {
+  const [name, tag] = String(userName).split("#");
+  return { name: name || userName, tag: tag || "" };
+}
+
+// ✅ [추가] API 응답 유저 -> UI 모델
+function toUserModel(apiUser) {
+  const { name, tag } = splitUserName(apiUser?.userName);
+  return {
+    id: String(apiUser?.userId),
+    userId: apiUser?.userId,
+    userName: apiUser?.userName,
+    name,
+    tag,
+    bio: apiUser?.introduction || "",
+    profileImageUrl: apiUser?.profileImageUrl || null,
+    introduction: apiUser?.introduction || null,
+  };
+}
 
 function FriendSearch({
   title = "팔로우 요청",
   placeholder = "이름/태그로 검색",
-  users = [],
   onFollow,
   followingList = [],
 }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
   const followingIdSet = useMemo(() => {
     return new Set(followingList.map((x) => x.id));
   }, [followingList]);
-
-  // ✅ 이름(name) + 태그(tag)만으로 검색 (소개 bio는 제외)
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-
-    return users.filter((u) => {
-      const name = (u.name || "").toLowerCase();
-      const tag = String(u.tag || "").toLowerCase();
-      return name.includes(q) || tag.includes(q);
-    });
-  }, [query, users]);
 
   // ✅ 프로필 클릭 시 친구 투두 상세로 이동
   const goFriendDetail = (friend) => {
     navigate("/friends/detail", { state: { friend } });
   };
+
+  // ✅ 디바운스 검색: /api/follow/search?nickname=...
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) {
+      setResults([]);
+      setErrorMsg("");
+      setLoading(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      setErrorMsg("");
+
+      try {
+        const res = await get("/api/follow/search", {
+          nickname: q,
+          page: 0,
+          size: 10,
+        });
+
+        const content = res?.result?.content || [];
+        setResults(content.map(toUserModel));
+      } catch (e) {
+        console.error(e);
+        setErrorMsg("검색에 실패했습니다.");
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   return (
     <section className="friend-search">
@@ -55,7 +103,11 @@ function FriendSearch({
         />
       </div>
 
-      {query.trim() === "" ? null : results.length === 0 ? (
+      {query.trim() === "" ? null : loading ? (
+        <div className="friend-search__empty">검색 중...</div>
+      ) : errorMsg ? (
+        <div className="friend-search__empty">{errorMsg}</div>
+      ) : results.length === 0 ? (
         <div className="friend-search__empty">검색 결과가 없습니다.</div>
       ) : (
         <ul className="friend-search__list">
@@ -71,7 +123,8 @@ function FriendSearch({
                   tabIndex={0}
                   onClick={() => goFriendDetail(user)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") goFriendDetail(user);
+                    if (e.key === "Enter" || e.key === " ")
+                      goFriendDetail(user);
                   }}
                 >
                   <div className="friend-avatar" aria-hidden="true">
@@ -83,8 +136,9 @@ function FriendSearch({
                       <span className="friend-info__name">{user.name}</span>
                       <span className="friend-info__tag">#{user.tag}</span>
                     </div>
-                    {/* 소개 표시(UI)는 유지해도 되고, 빼도 됨 */}
-                    <div className="friend-info__bio">{user.bio || "한 줄 소개"}</div>
+                    <div className="friend-info__bio">
+                      {user.bio || "한 줄 소개"}
+                    </div>
                   </div>
                 </div>
 
@@ -92,8 +146,8 @@ function FriendSearch({
                   type="button"
                   className={`friend-follow-btn ${isFollowing ? "is-disabled" : ""}`}
                   onClick={(e) => {
-                    e.stopPropagation(); // ✅ 버튼 클릭 시 상세 이동 방지
-                    onFollow?.(user);
+                    e.stopPropagation();
+                    onFollow?.(user); // ✅ 여기서 FriendPage의 POST /api/follow 호출
                   }}
                   disabled={isFollowing}
                 >
@@ -110,13 +164,7 @@ function FriendSearch({
 
 function UserIcon() {
   return (
-    <svg
-      width="34"
-      height="34"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
+    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
         d="M12 12c2.761 0 5-2.239 5-5S14.761 2 12 2 7 4.239 7 7s2.239 5 5 5Z"
         fill="#ffffff"

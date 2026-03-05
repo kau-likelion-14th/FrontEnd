@@ -60,6 +60,16 @@ const config = {
     LOGIN: `${BASE_URL}/api/auth/login`,
     KAKAO: `${BASE_URL}/api/auth/kakao`,
   },
+  
+  FRIEND: {
+    PROFILE: (friendId) => `${BASE_URL}/api/users/${friendId}`, // 또는 /api/friends/{id}
+    TODOS: {
+      LIST: (friendId) => `${BASE_URL}/api/users/${friendId}/todos`, // date=YYYY-MM-DD
+    },
+    CALENDAR: {
+      GET: (friendId) => `${BASE_URL}/api/users/${friendId}/todos/calendar`, // year, month
+    },
+  },
 };
 
 export default config;
