@@ -30,21 +30,33 @@ const MainPage = () => {
   const year = useMemo(() => viewDate.getFullYear(), [viewDate]);
   const month = useMemo(() => viewDate.getMonth() + 1, [viewDate]);
 
-  useEffect(() => {
-    const fetchCalendar = async () => {
-      try {
-        const res = await get(config.CALENDAR.GET, { year, month });
-        const data = res?.data ?? res;
+  // MainPage.js 내부의 useEffect 수정
 
-        // ✅ 공통 응답에서 진짜 payload는 result
-        const result = data?.result ?? data;
-        setRemainingByDate(result?.remainingCountByDate ?? {});
-      } catch (e) {
-        console.error("calendar fetch fail:", e);
-        console.error("status:", e?.response?.status);
-        console.error("data:", e?.response?.data);
+useEffect(() => {
+  const fetchCalendar = async () => {
+    try {
+      const res = await get(config.CALENDAR.GET, { year, month });
+      const data = res?.data ?? res;
+      const result = data?.result ?? data;
+
+      // ✅ 핵심 수정: 배열(days)을 { "2026-03-04": 1 } 형태의 객체로 변환
+      if (result && result.days) {
+        const mappedRemaining = {};
+        result.days.forEach(day => {
+          // hasTodo가 true일 때만 표시하고 싶다면 조건 추가 가능
+          if (day.hasTodo) {
+            mappedRemaining[day.date] = day.remaining;
+          }
+        });
+        setRemainingByDate(mappedRemaining);
+      } else {
+        setRemainingByDate({});
       }
-    };
+      
+    } catch (e) {
+      console.error("calendar fetch fail:", e);
+    }
+  };
 
   fetchCalendar();
 }, [year, month]);
@@ -68,7 +80,7 @@ const MainPage = () => {
     };
 
     fetchByDate();
-  }, [selectedDate, year, month]);
+  }, [selectedDate]);
 
   return (
     <div className="mainpage-container">
@@ -76,8 +88,9 @@ const MainPage = () => {
         initialDate={selectedDate}
         onDateChange={setSelectedDate}
         onMonthChange={(d) => {
-          setViewDate(d);
-          setSelectedDate(d);
+          const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
+          setViewDate(firstDay);
+          setSelectedDate(firstDay);
         }}
         todosByDate={todosByDate}
         remainingByDate={remainingByDate}

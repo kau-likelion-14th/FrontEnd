@@ -1,6 +1,6 @@
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "../../styles/Calendar.css";
 
 const toDateKey = (date) => {
@@ -12,6 +12,14 @@ const toDateKey = (date) => {
 
 export default function CustomCalendar({initialDate=new Date(), onDateChange, onMonthChange, todosByDate={}, remainingByDate = {}}) {
     const [selectedDate, setSelectedDate] = useState(initialDate);
+    const [activeStartDate, setActiveStartDate] = useState(
+        new Date(initialDate.getFullYear(), initialDate.getMonth(), 1)
+    );
+
+    useEffect(() => {
+        setSelectedDate(initialDate);
+        setActiveStartDate(new Date(initialDate.getFullYear(), initialDate.getMonth(), 1));
+    }, [initialDate]);
 
     const handledDateChange = (value) => {
         const next = value instanceof Date ? value : value?.[0];
@@ -19,17 +27,23 @@ export default function CustomCalendar({initialDate=new Date(), onDateChange, on
         onDateChange?.(next);
     };
 
+    // Calendar.js의 getDayMeta 함수 부분
+
     const getDayMeta = (date) => {
         const key = toDateKey(date);
 
-        // ✅ 1순위: 월별 캘린더 API에서 준 남은 개수
-        const hasKey = Object.prototype.hasOwnProperty.call(remainingByDate, key);
-        if (hasKey) {
-            const remaining = Number(remainingByDate[key]) || 0;
-            return { hasTodos: true, remaining, allDone: remaining === 0 };
+        // ✅ 1순위: 월별 캘린더 API에서 준 데이터 확인
+        if (Object.prototype.hasOwnProperty.call(remainingByDate, key)) {
+            const remaining = remainingByDate[key];
+            // 할 일이 있는데 남은 게 0이면 '모두 완료'
+            return { 
+                hasTodos: true, 
+                remaining: remaining, 
+                allDone: remaining === 0 
+            };
         }
 
-        // ✅ 2순위: fallback (일별 todosByDate 기반)
+        // ✅ 2순위: fallback (상세 할 일 목록 기준)
         const list = todosByDate[key] ?? [];
         if (list.length === 0) return { hasTodos: false, remaining: 0, allDone: false };
 
@@ -42,7 +56,9 @@ export default function CustomCalendar({initialDate=new Date(), onDateChange, on
             <Calendar
                 onChange={handledDateChange}
                 value={selectedDate}
+                activeStartDate={activeStartDate}
                 onActiveStartDateChange={({ activeStartDate }) => {
+                    setActiveStartDate(activeStartDate);
                     onMonthChange?.(activeStartDate);
                 }}
                 calendarType='gregory'
