@@ -128,9 +128,16 @@ function FriendSearch({
                   }}
                 >
                   <div className="friend-avatar" aria-hidden="true">
-                    <UserIcon />
+                    {user.profileImageUrl ? (
+                      <img
+                        src={user.profileImageUrl}
+                        alt=""
+                        className="friend-avatar__img"
+                      />
+                    ) : (
+                      <UserIcon />
+                    )}
                   </div>
-
                   <div className="friend-info">
                     <div className="friend-info__top">
                       <span className="friend-info__name">{user.name}</span>
