@@ -66,9 +66,7 @@ export default function LoginPage() {
   // ✅ 2) 로그인 버튼 클릭
   const handleClick = () => {
     const REST_KEY = process.env.REACT_APP_KAKAO_REST_KEY;
-    const redirectUri =
-      process.env.REACT_APP_KAKAO_REDIRECT_URI ||
-      `${window.location.origin}/login/oauth2/code/kakao`;
+    const redirectUri = `${window.location.origin}/login/oauth2/code/kakao`;
 
     const authUrl =
       `https://kauth.kakao.com/oauth/authorize` +
