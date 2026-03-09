@@ -37,6 +37,8 @@ const config = {
   PROFILE: {
     DELETE: `${BASE_URL}/api/profile`,
     PUT: `${BASE_URL}/api/profile`,
+    GET: `${BASE_URL}/api/profile`,
+    Intro: `${BASE_URL}/api/profile/intro`,
   },
 
   CALENDAR: {

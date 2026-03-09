@@ -70,8 +70,13 @@ const YoutubeModal = ({ isOpen, onClose, onPick }) => {
   const handlePick = (song) => {
     const title = normalizeTitle(song);
     const artist = normalizeArtist(song);
+    const id = normalizeId(song); // 고유 ID 추가
+
     onPick?.({
       ...song,
+      songId: id, // ID 전달
+      title: title,
+      artist: artist,
       displayText: artist ? `${title} - ${artist}` : title,
     });
     onClose?.();
