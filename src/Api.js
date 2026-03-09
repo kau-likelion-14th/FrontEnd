@@ -154,6 +154,7 @@ export const uploadImageWithJson = async (
 };
 
 // 프로필 전용: intro/song/image 업로드 (PUT /api/profile 대응용)
+// 프로필 전용: intro/song/image 업로드 (PUT /api/profile 대응용)
 export const uploadProfile = async (
   endpoint,
   { intro, song, imageFile },
@@ -166,13 +167,24 @@ export const uploadProfile = async (
   } = {}
 ) => {
   const formData = new FormData();
+
   if (intro !== undefined) formData.append(introField, intro);
   if (song !== undefined) formData.append(songField, song);
-  if (imageFile) formData.append(imageField, imageFile);
+
+  // ⚠️ 핵심 수정 부분
+  if (imageFile) {
+    // 1. 실제 파일이 있으면 파일을 담음
+    formData.append(imageField, imageFile);
+  } else {
+    // 2. 파일이 없으면(null), 빈 파일 객체를 만들어 보냄 
+    // 이렇게 해야 서버가 "image 파트가 있네!"라고 인식하고 400 에러를 안 냅니다.
+    // 세 번째 인자인 'empty.png'는 파일 이름을 흉내내는 용도입니다.
+    formData.append(imageField, new Blob([]), "empty.png");
+  }
 
   const response = await api.request({
     url: endpoint,
-    method, // 기본 put
+    method,
     data: formData,
     headers: { "Content-Type": "multipart/form-data" },
     ...options,
