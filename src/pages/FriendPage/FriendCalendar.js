@@ -42,10 +42,24 @@ export default function FriendCalendar({
   const getDayMeta = (date) => {
     const key = toDateKey(date);
 
-    // ✅ 1순위: 월별 캘린더 API에서 준 남은 개수
+    // ✅ 1순위: 월별 캘린더 API에서 준 날짜별 메타
     const hasKey = Object.prototype.hasOwnProperty.call(remainingByDate, key);
     if (hasKey) {
-      const remaining = Number(remainingByDate[key]) || 0;
+      const dayInfo = remainingByDate[key];
+
+      // number 형태로 들어오는 경우도 방어
+      if (typeof dayInfo === "number") {
+        const remaining = Number(dayInfo) || 0;
+        return { hasTodos: true, remaining, allDone: remaining === 0 };
+      }
+
+      const hasTodos = Boolean(dayInfo?.hasTodo);
+      const remaining = Number(dayInfo?.remaining) || 0;
+
+      if (!hasTodos) {
+        return { hasTodos: false, remaining: 0, allDone: false };
+      }
+
       return { hasTodos: true, remaining, allDone: remaining === 0 };
     }
 

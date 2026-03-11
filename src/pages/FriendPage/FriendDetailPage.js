@@ -43,21 +43,29 @@ function FriendDetailPage() {
   const passedFriend = location.state?.friend ?? null;
 
   // ✅ 새로고침/직접접속 대비: params.id 지원
-  const friendId = useMemo(() => {
-    return passedFriend?.id ?? params?.id ?? null;
+  // ✅ followId가 가장 중요하므로 우선순위 높게
+  const followId = useMemo(() => {
+    return (
+      passedFriend?.followId ??
+      passedFriend?.id ??
+      params?.followId ??
+      params?.id ??
+      null
+    );
   }, [passedFriend, params]);
 
   // ✅ 프로필
   const [friend, setFriend] = useState(
     passedFriend ?? {
-      id: friendId ?? "",
+      followId: followId ?? "",
       name: "",
       tag: "",
       bio: "",
+      profileImage: null,
     }
   );
 
-  // ✅ 캘린더/투두 상태 (메인과 동일)
+  // ✅ 캘린더/투두 상태
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewDate, setViewDate] = useState(new Date());
 
@@ -67,51 +75,59 @@ function FriendDetailPage() {
   const year = useMemo(() => viewDate.getFullYear(), [viewDate]);
   const month = useMemo(() => viewDate.getMonth() + 1, [viewDate]);
 
-  // ✅ 방어: friendId 없으면 목록으로
+  // ✅ 방어: followId 없으면 목록으로
   useEffect(() => {
-    if (!friendId) {
+    if (!followId) {
       navigate("/friends");
     }
-  }, [friendId, navigate]);
+  }, [followId, navigate]);
 
-  // 1) 친구 프로필 상세 조회 (선택)
+  // 1) 친구 프로필 상세 조회
   useEffect(() => {
-    if (!friendId) return;
+    if (!followId) return;
 
     const fetchFriend = async () => {
       try {
-        const res = await get(config.FRIENDS.DETAIL(friendId));
-        const data = res?.data ?? res;
-        const result = data?.result ?? data;
+        const data = await get(config.FRIEND.PROFILE(followId));
+        const result = data?.result ?? {};
 
         setFriend((prev) => ({
           ...prev,
-          id: result?.id ?? result?.userId ?? friendId,
-          name: result?.username ?? result?.nickname ?? result?.name ?? prev?.name ?? "",
-          tag: result?.userTag ?? result?.tag ?? prev?.tag ?? "",
-          bio: result?.introduction ?? result?.bio ?? prev?.bio ?? "",
-          profileImage: result?.profileImage ?? result?.profileImageUrl ?? prev?.profileImage ?? null,
+          followId,
+          name: result?.userName ?? prev?.name ?? "",
+          bio: result?.introduction ?? prev?.bio ?? "",
+          profileImage: result?.profileImageUrl ?? prev?.profileImage ?? null,
         }));
       } catch (e) {
-        console.error("friend detail fetch fail:", e);
+        console.error("friend profile fetch fail:", e);
+        console.error("status:", e?.response?.status);
+        console.error("data:", e?.response?.data);
       }
     };
 
     fetchFriend();
-  }, [friendId]);
+  }, [followId]);
 
-  // 2) 친구 월 캘린더 remainingCountByDate (메인과 동일)
+  // 2) 친구 월 캘린더 조회
   useEffect(() => {
-    if (!friendId) return;
+    if (!followId) return;
 
     const fetchCalendar = async () => {
       try {
-        const res = await get(config.FRIENDS.CALENDAR.GET(friendId), { year, month });
-        const data = res?.data ?? res;
+        const data = await get(config.FRIEND.CALENDAR.GET(followId), { year, month });
+        const result = data?.result ?? {};
+        const days = Array.isArray(result?.days) ? result.days : [];
 
-        // ✅ 공통 응답에서 진짜 payload는 result
-        const result = data?.result ?? data;
-        setRemainingByDate(result?.remainingCountByDate ?? {});
+        const mapped = {};
+        days.forEach((day) => {
+          if (!day?.date) return;
+          mapped[day.date] = {
+            remaining: Number(day?.remaining) || 0,
+            hasTodo: Boolean(day?.hasTodo),
+          };
+        });
+
+        setRemainingByDate(mapped);
       } catch (e) {
         console.error("friend calendar fetch fail:", e);
         console.error("status:", e?.response?.status);
@@ -120,33 +136,32 @@ function FriendDetailPage() {
     };
 
     fetchCalendar();
-  }, [friendId, year, month]);
+  }, [followId, year, month]);
 
-  // 3) 친구 일별 투두 조회 (메인과 동일)
+  // 3) 친구 일별 투두 조회
   useEffect(() => {
-    if (!friendId) return;
+    if (!followId) return;
 
     const fetchByDate = async () => {
       const dateKey = toDateKey(selectedDate);
 
       try {
-        const res = await get(config.FRIENDS.TODOS.LIST(friendId), { date: dateKey });
-        const data = res?.data ?? res;
-
-        const payload = data?.result ?? data; // ✅ 공통 result 대응
-        const list = payload?.todos ?? payload?.items ?? payload?.list ?? payload ?? [];
-        const normalized = Array.isArray(list) ? list.map(normalizeTodo) : [];
+        const data = await get(config.FRIEND.TODOS.LIST(followId), { date: dateKey });
+        const result = data?.result ?? [];
+        const list = Array.isArray(result) ? result : [];
+        const normalized = list.map(normalizeTodo);
 
         setTodosByDate((prev) => ({ ...prev, [dateKey]: normalized }));
       } catch (e) {
         console.error("friend todos fetch fail:", e);
         console.error("status:", e?.response?.status);
         console.error("data:", e?.response?.data);
+        setTodosByDate((prev) => ({ ...prev, [dateKey]: [] }));
       }
     };
 
     fetchByDate();
-  }, [friendId, selectedDate, year, month]);
+  }, [followId, selectedDate]);
 
   const todos = useMemo(() => {
     const key = toDateKey(selectedDate);
@@ -183,9 +198,6 @@ function FriendDetailPage() {
             <div className="friend-detail-page__profile-info">
               <div className="friend-detail-page__name-line">
                 <span className="friend-detail-page__name">{friend?.name || " "}</span>
-                {friend?.tag ? (
-                  <span className="friend-detail-page__tag">#{friend.tag}</span>
-                ) : null}
               </div>
               <div className="friend-detail-page__bio">{friend?.bio || "한 줄 소개"}</div>
             </div>
@@ -199,8 +211,8 @@ function FriendDetailPage() {
               initialDate={selectedDate}
               onDateChange={(d) => d && setSelectedDate(d)}
               onMonthChange={(d) => {
+                if (!d) return;
                 setViewDate(d);
-                setSelectedDate(d);
               }}
               todosByDate={todosByDate}
               remainingByDate={remainingByDate}

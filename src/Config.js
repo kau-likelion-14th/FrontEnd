@@ -64,12 +64,12 @@ const config = {
   },
   
   FRIEND: {
-    PROFILE: (friendId) => `${BASE_URL}/api/users/${friendId}`, // 또는 /api/friends/{id}
+    PROFILE: (followId) => `${BASE_URL}/api/follow/${followId}`,
     TODOS: {
-      LIST: (friendId) => `${BASE_URL}/api/users/${friendId}/todos`, // date=YYYY-MM-DD
+      LIST: (followId) => `${BASE_URL}/api/follow/${followId}/todos`,
     },
     CALENDAR: {
-      GET: (friendId) => `${BASE_URL}/api/users/${friendId}/todos/calendar`, // year, month
+      GET: (followId) => `${BASE_URL}/api/follow/${followId}/calendar`,
     },
   },
 };
