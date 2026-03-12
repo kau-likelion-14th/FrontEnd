@@ -13,7 +13,7 @@ const Profile = () => {
 
   const [nickname, setNickname] = useState("Likelion#1253");
   const [intro, setIntro] = useState("안녕하세요");
-  const [song, setSong] = useState("내꺼하자 - 인피니트");
+  const [song, setSong] = useState("");
 
   const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -35,8 +35,14 @@ const Profile = () => {
         console.log("프로필 데이터 확인:", result);
         setNickname(result.userName || "");
         setIntro(result.introduction || "");
-        setSong(result.song || "");
-        
+        if (result.savedSongs && result.savedSongs.length > 0) {
+          const topSong = result.savedSongs[0];
+          // 제목과 가수를 합쳐서 화면에 보여줍니다.
+          const formattedSong = `${topSong.title} - ${topSong.artist}`;
+          setSong(formattedSong);
+        } else {
+          setSong("선택된 노래가 없습니다.");
+        }
         if (result.profileImageUrl) {
           setProfileImageUrl(result.profileImageUrl);
         }
