@@ -65,6 +65,9 @@ function FriendDetailPage() {
     }
   );
 
+  // ✅ 저장한 곡 목록
+  const [savedSongs, setSavedSongs] = useState([]);
+
   // ✅ 캘린더/투두 상태
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewDate, setViewDate] = useState(new Date());
@@ -74,6 +77,12 @@ function FriendDetailPage() {
 
   const year = useMemo(() => viewDate.getFullYear(), [viewDate]);
   const month = useMemo(() => viewDate.getMonth() + 1, [viewDate]);
+
+  // ✅ 최신 저장곡 1개만 상단에 노출
+  const latestSong = useMemo(() => {
+    if (!Array.isArray(savedSongs) || savedSongs.length === 0) return null;
+    return savedSongs[0];
+  }, [savedSongs]);
 
   // ✅ 방어: followId 없으면 목록으로
   useEffect(() => {
@@ -98,15 +107,19 @@ function FriendDetailPage() {
           bio: result?.introduction ?? prev?.bio ?? "",
           profileImage: result?.profileImageUrl ?? prev?.profileImage ?? null,
         }));
+
+        // ✅ savedSongs도 같은 API 응답에서 같이 저장
+        setSavedSongs(Array.isArray(result?.savedSongs) ? result.savedSongs : []);
       } catch (e) {
         console.error("friend profile fetch fail:", e);
         console.error("status:", e?.response?.status);
         console.error("data:", e?.response?.data);
+        setSavedSongs([]);
       }
     };
 
     fetchFriend();
-  }, [followId]);
+  }, [followId, navigate]);
 
   // 2) 친구 월 캘린더 조회
   useEffect(() => {
@@ -171,7 +184,7 @@ function FriendDetailPage() {
   return (
     <div className="friend-detail-page">
       <div className="friend-detail-page__inner">
-        {/* 상단: 뒤로가기 + 프로필 */}
+        {/* 상단: 뒤로가기 + 프로필 + 저장곡 */}
         <div className="friend-detail-page__top">
           <button
             type="button"
@@ -201,6 +214,41 @@ function FriendDetailPage() {
               </div>
               <div className="friend-detail-page__bio">{friend?.bio || "한 줄 소개"}</div>
             </div>
+          </div>
+
+          {/* ✅ 저장곡: 프로필과 같은 가로줄에 배치 */}
+          <div className="friend-detail-page__songs-inline">
+            {latestSong ? (
+              <div className="friend-detail-page__song-inline-item">
+                <div className="friend-detail-page__song-inline-cover">
+                  {latestSong?.imageUrl ? (
+                    <img
+                      src={latestSong.imageUrl}
+                      alt={latestSong.title || "album"}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: "10px",
+                      }}
+                    />
+                  ) : null}
+                </div>
+
+                <div className="friend-detail-page__song-inline-info">
+                  <div className="friend-detail-page__song-inline-title">
+                    {latestSong?.title || "제목 없음"}
+                  </div>
+                  <div className="friend-detail-page__song-inline-artist">
+                    {latestSong?.artist || "아티스트 정보 없음"}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="friend-detail-page__songs-inline-empty">
+                저장한 곡이 없습니다.
+              </div>
+            )}
           </div>
         </div>
 
