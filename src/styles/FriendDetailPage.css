@@ -30,12 +30,15 @@
   line-height: 44px;
   color: #333333;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .friend-detail-page__profile {
   display: flex;
   align-items: center;
   gap: 16px;
+  min-width: 0;
+  flex-shrink: 0;
 }
 
 .friend-detail-page__avatar {
@@ -46,24 +49,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .friend-detail-page__profile-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .friend-detail-page__name-line {
   display: flex;
   align-items: baseline;
   gap: 8px;
+  min-width: 0;
 }
 
 .friend-detail-page__name {
   font-size: 18px;
   font-weight: 800;
   color: #333333;
+  white-space: nowrap;
 }
 
 .friend-detail-page__tag {
@@ -75,6 +83,73 @@
 .friend-detail-page__bio {
   font-size: 13px;
   color: #8f8f8f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-detail-page__songs-inline {
+  margin-left: auto;
+  transform: translateX(-110px);
+  max-width: 460px;
+  min-width: 0;
+  width: 100%;
+}
+.friend-detail-page__song-inline-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 84px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: #f7faf8;
+  box-sizing: border-box;
+}
+
+.friend-detail-page__song-inline-cover {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #e9ecef;
+  flex-shrink: 0;
+}
+
+.friend-detail-page__song-inline-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.friend-detail-page__song-inline-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #222222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-detail-page__song-inline-artist {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #777777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-detail-page__songs-inline-empty {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 84px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: #f7faf8;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: #9aa1a7;
 }
 
 /* 본문 그리드 */
@@ -94,6 +169,17 @@
   .friend-detail-page__grid {
     gap: 40px;
   }
+
+  .friend-detail-page__top {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .friend-detail-page__songs-inline {
+    margin-left: 0;
+    max-width: 100%;
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -104,5 +190,30 @@
   .friend-detail-page__grid {
     grid-template-columns: 1fr;
     gap: 44px;
+  }
+
+  .friend-detail-page__top {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .friend-detail-page__profile {
+    width: calc(100% - 62px);
+  }
+
+  .friend-detail-page__songs-inline {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .friend-detail-page__song-inline-item,
+  .friend-detail-page__songs-inline-empty {
+    min-height: 76px;
+    padding: 12px 14px;
+  }
+
+  .friend-detail-page__song-inline-cover {
+    width: 46px;
+    height: 46px;
   }
 }
